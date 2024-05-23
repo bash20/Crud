@@ -34,7 +34,20 @@
 
     <div class="container">
         <h2>User Information</h2>
-        <table class="table table-bordered">
+        <div class="container">
+            <form>
+                <div class="form-row">
+                    <div class="col">
+                        <input type="text" placeholder="Min" id="min" name="Idmin">
+                    </div>
+                    <div class="col">
+                        <input type="text" placeholder="Max" id="max" name="Idmax">
+                    </div>
+                </div>
+                <button class="btn btn-primary mt-3" type="submit" id="search">Search</button>
+            </form>
+        </div>
+        <table class="table table-bordered mt-3">
             <thead>
             <div  id="response"></div>
                 <tr>
@@ -61,8 +74,8 @@
                   dataType: 'json', 
                   success: function(response){
                       if(response.length > 0){
-                          response.forEach(function(item){
-                              $('#data-container').append(`<tr> <td> ${item.id} </td> <td> ${item.Uname} </td> <td> ${item.emailid} </td> <td><input class="btn btn-danger" type="button" value="Delet" name="U_delet" id="Udelet" data-id="${item.id}"> <input class="btn btn-info" type="button" value="Edit" name="U_edit" id="Uedit" data-id="${item.id}" data-name = "${item.Uname}" data-emailid = "${item.emailid}"></td> </tr>`)
+                          response.forEach(function(info){
+                              $('#data-container').append(`<tr> <td> ${info.id} </td> <td> ${info.Uname} </td> <td> ${info.emailid} </td> <td><input class="btn btn-danger" type="button" value="Delet" name="U_delet" id="Udelet" data-id="${info.id}"> <input class="btn btn-info" type="button" value="Edit" name="U_edit" id="Uedit" data-id="${info.id}" data-name = "${info.Uname}" data-emailid = "${info.emailid}"></td> </tr>`)
                           });
                       } else {
                           console.log("No records found");
@@ -107,6 +120,8 @@
                 data : {U_delet : Uid, action : 'delete' },
                 success : function(data){
                     $('#response').html(data);
+                    $('#data-container').empty();
+                    fetchData();
                     
                 },
                 error: function(xhr, status, error){
@@ -135,11 +150,40 @@
                     },
                     success :function(data){
                         $('#response').html(data);
+                        $('#data-container').empty();
+                        fetchData();
                     }
                 })
             })
 
             console.log(Uid, uname, uemailid);
+          })
+          $('#search').click(function(e){
+           e.preventDefault();
+            var Minid = $('#min').val();
+            var Maxid = $('#max').val(); 
+            $.ajax({
+                url : 'info.php',
+                method : 'GET',
+                data : {
+                    Idmin : Minid,
+                    Idmax : Maxid,
+                    action : 'between'   
+                },
+                dataType : 'json',
+                success: function(response){
+                    $('#data-container').empty();
+                    if(response.length > 0){
+                        response.forEach(function(info) {
+                            $('#data-container').append(`<tr> <td> ${info.id} </td> <td> ${info.Uname} </td> <td> ${info.emailid} </td> <td><input class="btn btn-danger" type="button" value="Delet" name="U_delet" id="Udelet" data-id="${info.id}"> <input class="btn btn-info" type="button" value="Edit" name="U_edit" id="Uedit" data-id="${info.id}" data-name = "${info.Uname}" data-emailid = "${info.emailid}"></td> </tr>`)
+                        })
+                    } else {
+                          console.log("No records found");
+                      }
+                }
+            })
+
+            
           })
         })
     </script>

@@ -61,6 +61,20 @@ function updateUser($conn){
         echo "<p class='alert alert-danger'>Data not updated</p>";
     }
 }
+function betUser($conn){
+    $minid = intval($_GET['Idmin']);
+    $maxid = intval($_GET['Idmax']);
+     
+     $sql = "SELECT * FROM info WHERE id BETWEEN $minid AND $maxid";
+     $result = $conn->query($sql);
+     $users = [];
+     if ($result->num_rows > 0) {
+         while ($row = $result->fetch_assoc()) {
+             $users[] = $row;
+         }
+     }
+     echo json_encode($users);
+ }
 
 $action = $_REQUEST['action'];
  switch($action){
@@ -79,5 +93,9 @@ $action = $_REQUEST['action'];
     case 'update':
         updateUser($conn);
         break;
+
+        case 'between':
+            betUser($conn);
+            break;
  }
 
